@@ -1,5 +1,7 @@
 # match-the-code.nvim
 
+_Inspired by [vim-be-good](https://github.com/ThePrimeagen/vim-be-good)_
+
 ## Development
 
 In terminal:

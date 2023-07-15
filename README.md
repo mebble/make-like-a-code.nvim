@@ -1,4 +1,4 @@
-# match-the-code.nvim
+# make-like-a-code.nvim
 
 _Inspired by [vim-be-good](https://github.com/ThePrimeagen/vim-be-good)_
 
@@ -14,8 +14,8 @@ In neovim:
 
 ```
 # Either do this:
-lua require("match-the-code")
+lua require("make-like-a-code")
 
-# Or open lua/match-the-code/init.lua, then do:
+# Or open lua/make-like-a-code/init.lua, then do:
 source %
 ```

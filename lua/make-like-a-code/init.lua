@@ -1,4 +1,4 @@
-local u = require('match-the-code.utils')
+local u = require('make-like-a-code.utils')
 
 local prompt = [[
 Hi there

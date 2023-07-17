@@ -19,3 +19,13 @@ lua require("make-like-a-code")
 # Or open lua/make-like-a-code/init.lua, then do:
 source %
 ```
+
+### Testing
+
+In neovim:
+
+```
+PlenaryBustedDirectory tests
+```
+
+More information on testing at [plenary.nvim](https://github.com/nvim-lua/plenary.nvim/blob/master/TESTS_README.md).

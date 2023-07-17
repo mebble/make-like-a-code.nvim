@@ -1,18 +1,21 @@
 local function split_string(s)
     -- https://stackoverflow.com/a/32847589/5811761
-    local lines = {}
-    for line in string.gmatch(s, "[^\r\n]+") do
-        table.insert(lines, line)
+    -- https://stackoverflow.com/a/832414/5811761
+    local lines = {""}
+    for char in string.gmatch(s, ".") do
+        if char == "\n" then
+           table.insert(lines, "")
+        else
+            local last_pos = (#lines == 0) and 1 or #lines
+            local last_line = lines[last_pos] or ""
+            lines[last_pos] = last_line .. char
+        end
     end
     return lines
 end
 
 local function join_strings(str_table)
-    local joined = ""
-    for _, line in ipairs(str_table) do
-        joined = joined .. line .. "\n"
-    end
-    return joined
+    return table.concat(str_table, "\n")
 end
 
 return {

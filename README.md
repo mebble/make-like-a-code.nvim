@@ -13,11 +13,11 @@ nvim -c "set rtp+=."
 In neovim:
 
 ```
-# Either do this:
-lua require("make-like-a-code")
-
-# Or open lua/make-like-a-code/init.lua, then do:
+# Open plugin/make-like-a-code.vim, then do:
 source %
+
+# Then run the make-like-a-code command:
+MakeLikeACode mebble/mcj 8f091af
 ```
 
 ### Testing

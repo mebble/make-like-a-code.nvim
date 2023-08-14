@@ -38,6 +38,8 @@ local function start(github_repo, commit_hash)
 
     vim.api.nvim_win_set_buf(player_win, player_buf)
     vim.api.nvim_win_set_buf(prompt_win, prompt_buf)
+    vim.api.nvim_win_set_option(player_win, 'diff', true)
+    vim.api.nvim_win_set_option(prompt_win, 'diff', true)
     vim.api.nvim_set_current_win(player_win)
 
     local start_time = vim.fn.localtime()

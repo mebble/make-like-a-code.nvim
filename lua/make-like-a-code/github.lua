@@ -39,15 +39,17 @@ local function fetch_snippets(repo, sha)
     local res_json = vim.json.decode(res_commit)
     local parent_sha = res_json.parents[1].sha
     local file_name = res_json.files[1].filename
+    local file_ext = string.match(file_name, "[%a%d]+$")
 
     local ok_files, raw_file, raw_file_parent = pcall(fetch_raw_files, repo, file_name, sha, parent_sha)
     if not ok_files then
         error()
     end
 
-    return raw_file, raw_file_parent
+    return file_ext, raw_file, raw_file_parent
 end
 
 return {
+    raw_file_url = raw_file_url,
     fetch_snippets = fetch_snippets
 }

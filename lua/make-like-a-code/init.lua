@@ -1,11 +1,22 @@
 local u = require('make-like-a-code.utils')
 local github = require('make-like-a-code.github')
 
+local function handle_scroll(buf_to_handle, win_to_handle, win_to_sync)
+    vim.api.nvim_create_autocmd('WinScrolled', {
+        buffer = buf_to_handle,
+        callback = function()
+            local cursor = vim.api.nvim_win_get_cursor(win_to_handle)
+            vim.api.nvim_win_set_cursor(win_to_sync, cursor)
+        end
+    })
+end
+
 local function start(github_repo, commit_hash)
-    local ok, new_snippet, old_snippet = pcall(github.fetch_snippets, github_repo, commit_hash)
+    local ok, file_ext, new_snippet, old_snippet = pcall(github.fetch_snippets, github_repo, commit_hash)
     if not ok then
         error('Failed to fetch commit from github')
     end
+    print('Got file ext' .. file_ext)
 
     local new_snippet_lines = u.split_string(new_snippet)
     local old_snippet_lines = u.split_string(old_snippet)
@@ -31,6 +42,8 @@ local function start(github_repo, commit_hash)
 
     local start_time = vim.fn.localtime()
     print('Starting game at buffer:', player_buf)
+    handle_scroll(player_buf, player_win, prompt_win)
+    handle_scroll(prompt_buf, prompt_win, player_win)
     vim.api.nvim_buf_attach(player_buf, true, {
         on_lines = function(_, buf)
             local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)

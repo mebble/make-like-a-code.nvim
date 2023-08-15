@@ -2,6 +2,11 @@ local g = require('make-like-a-code.github')
 
 local sentinal = '\n--mlac--\n'
 local std_dir = ('%s/make-like-a-code'):format(vim.fn.stdpath('data'))
+local ok, msg, code = os.execute('mkdir -p ' .. std_dir)
+if not ok then
+    print(('Creating snippets directory failed: [%s] [%s]'):format(code, msg))
+    os.exit(1)
+end
 
 local function format_path(repo, sha)
     local username = string.match(repo, '^([%a%d]+)/')

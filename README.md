@@ -15,6 +15,8 @@ In neovim:
 ```
 # Open plugin/make-like-a-code.vim, then do:
 source %
+# or
+so
 
 # Then run the make-like-a-code command:
 MakeLikeACode mebble/mcj 8f091af

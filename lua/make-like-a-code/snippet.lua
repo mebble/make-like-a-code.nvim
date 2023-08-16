@@ -1,18 +1,13 @@
 local g = require('make-like-a-code.github')
+local s = require('make-like-a-code.storage')
 
 local sentinal = '\n--mlac--\n'
-local std_dir = ('%s/make-like-a-code'):format(vim.fn.stdpath('data'))
-local ok, msg, code = os.execute('mkdir -p ' .. std_dir)
-if not ok then
-    print(('Creating snippets directory failed: [%s] [%s]'):format(code, msg))
-    os.exit(1)
-end
 
-local function format_path(repo, sha)
+local function format_resource_name(repo, sha)
     local username = string.match(repo, '^([%a%d]+)/')
     local projectname = string.match(repo, '/([%a%d]+)$')
 
-    return ('%s/%s-%s-%s'):format(std_dir, username, projectname, sha)
+    return ('%s-%s-%s'):format(username, projectname, sha)
 end
 
 local function format_contents(file_extension, raw_file, raw_file_parent)
@@ -39,30 +34,19 @@ local function parse_contents(contents)
 end
 
 local function get_snippets(repo, sha)
-    local path = format_path(repo, sha)
-    local f = io.open(path, 'r')
-    if f ~= nil then
-        local contents = f:read('*a')
-        f:close()
+    local path = format_resource_name(repo, sha)
+    local ok, contents = pcall(s.lookup_cache, path, function()
+        local ok, ext, _, raw_file, raw_file_parent = pcall(g.fetch_snippets, repo, sha)
+        if not ok then
+            error()
+        end
+        local contents = format_contents(ext, raw_file, raw_file_parent)
+        return contents
+    end)
+    if ok then
         return parse_contents(contents)
     end
-
-    local ok, ext, full_sha, raw_file, raw_file_parent = pcall(g.fetch_snippets, repo, sha)
-    if not ok then
-        error()
-    end
-
-    path = format_path(repo, full_sha)
-    f = io.open(path, 'w')
-    if f == nil then
-        error()
-    end
-
-    local contents = format_contents(ext, raw_file, raw_file_parent)
-    f:write(contents)
-    f:close()
-
-    return ext, raw_file, raw_file_parent
+    error()
 end
 
 return {

@@ -51,6 +51,6 @@ local function fetch_snippets(repo, sha)
 end
 
 return {
-    raw_file_url = raw_file_url,
+    fetch = fetch,
     fetch_snippets = fetch_snippets
 }

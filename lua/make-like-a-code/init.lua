@@ -12,11 +12,16 @@ local function handle_scroll(buf_to_handle, win_to_handle, win_to_sync)
 end
 
 local function start(github_repo, commit_hash)
-    local ok, file_ext, new_snippet, old_snippet = pcall(snippet.get_snippets, github_repo, commit_hash)
+    local ok, languages = pcall(snippet.get_languages)
+    if not ok then
+        error('Failed to get languages')
+    end
+
+    local ok, snippet_contents = pcall(snippet.get_snippets, github_repo, commit_hash)
     if not ok then
         error('Failed to fetch commit from github')
     end
-    print('Got file ext' .. file_ext)
+    local file_ext, new_snippet, old_snippet = snippet.parse_contents(snippet_contents)
 
     local new_snippet_lines = u.split_string(new_snippet)
     local old_snippet_lines = u.split_string(old_snippet)
@@ -35,6 +40,12 @@ local function start(github_repo, commit_hash)
     local prompt_buf = vim.api.nvim_create_buf(true, true)
     vim.api.nvim_buf_set_name(prompt_buf, "Prompt")
     vim.api.nvim_buf_set_lines(prompt_buf, 0, -1, false, new_snippet_lines)
+
+    local lang = snippet.extension_to_language(languages, file_ext)
+    if lang ~= nil then
+        vim.api.nvim_buf_set_option(player_buf, 'filetype', lang)
+        vim.api.nvim_buf_set_option(prompt_buf, 'filetype', lang)
+    end
 
     vim.api.nvim_win_set_buf(player_win, player_buf)
     vim.api.nvim_win_set_buf(prompt_win, prompt_buf)

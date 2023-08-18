@@ -33,8 +33,7 @@ local function start(github_repo, commit_hash)
 
     local lang = snippet.extension_to_language(languages, file_ext)
     if lang ~= nil then
-        vim.api.nvim_buf_set_option(player_buf, 'filetype', lang)
-        vim.api.nvim_buf_set_option(prompt_buf, 'filetype', lang)
+        print('Language: '..lang)
     end
 
     vim.api.nvim_win_set_buf(player_win, player_buf)

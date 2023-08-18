@@ -1,16 +1,6 @@
 local u = require('make-like-a-code.utils')
 local snippet = require('make-like-a-code.snippet')
 
-local function handle_scroll(buf_to_handle, win_to_handle, win_to_sync)
-    vim.api.nvim_create_autocmd('WinScrolled', {
-        buffer = buf_to_handle,
-        callback = function()
-            local cursor = vim.api.nvim_win_get_cursor(win_to_handle)
-            vim.api.nvim_win_set_cursor(win_to_sync, cursor)
-        end
-    })
-end
-
 local function start(github_repo, commit_hash)
     local ok, languages = pcall(snippet.get_languages)
     if not ok then
@@ -51,11 +41,10 @@ local function start(github_repo, commit_hash)
     vim.api.nvim_win_set_buf(prompt_win, prompt_buf)
     vim.api.nvim_win_set_option(player_win, 'diff', true)
     vim.api.nvim_win_set_option(prompt_win, 'diff', true)
+    vim.api.nvim_win_set_option(player_win, 'scrollbind', true)
+    vim.api.nvim_win_set_option(prompt_win, 'scrollbind', true)
 
     vim.api.nvim_set_current_win(player_win)
-
-    handle_scroll(player_buf, player_win, prompt_win)
-    handle_scroll(prompt_buf, prompt_win, player_win)
 
     local start_time = vim.fn.localtime()
     print('Starting game at buffer:', player_buf)
@@ -67,8 +56,10 @@ local function start(github_repo, commit_hash)
                 local end_time = vim.fn.localtime()
                 local secs = end_time - start_time
                 print('Finished in ' .. secs .. " seconds")
-                vim.api.nvim_win_set_option(prompt_win, 'diff', false)
                 vim.api.nvim_win_set_option(player_win, 'diff', false)
+                vim.api.nvim_win_set_option(prompt_win, 'diff', false)
+                vim.api.nvim_win_set_option(player_win, 'scrollbind', false)
+                vim.api.nvim_win_set_option(prompt_win, 'scrollbind', false)
                 return true
             end
         end

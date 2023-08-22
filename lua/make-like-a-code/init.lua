@@ -1,5 +1,6 @@
 local u = require('make-like-a-code.utils')
 local snippet = require('make-like-a-code.snippet')
+local lualine = require('lualine')
 
 local function activate_game_panes(player_win, prompt_win)
     vim.api.nvim_win_set_option(player_win, 'diff', true)
@@ -35,7 +36,12 @@ local function create_game_panes(old_snippet_lines, new_snippet_lines)
     return player_win, player_buf, prompt_win, prompt_buf
 end
 
+local function edits_made()
+    return vim.fn.localtime()
+end
+
 local function start(github_repo, commit_hash)
+    ----- SNIPPETS -----
     local ok, languages = pcall(snippet.get_languages)
     if not ok then
         error('Failed to get languages')
@@ -47,22 +53,28 @@ local function start(github_repo, commit_hash)
     end
     local file_ext, new_snippet, old_snippet = snippet.parse_contents(snippet_contents)
 
-    local new_snippet_lines = u.split_string(new_snippet)
-    local old_snippet_lines = u.split_string(old_snippet)
-
-    local player_win, player_buf, prompt_win  = create_game_panes(old_snippet_lines, new_snippet_lines);
-    activate_game_panes(player_win, prompt_win)
-
-    -- HACK. TODO = ensure that when player_buf's lines are joined, they're the same as they were before splitting 
-    new_snippet = u.join_strings(new_snippet_lines)
-
     local lang = snippet.extension_to_language(languages, file_ext)
     if lang ~= nil then
         print('Language: '..lang)
     end
 
+    local new_snippet_lines = u.split_string(new_snippet)
+    local old_snippet_lines = u.split_string(old_snippet)
 
+    ----- WINDOWS AND PANES -----
+    local player_win, player_buf, prompt_win  = create_game_panes(old_snippet_lines, new_snippet_lines);
+    activate_game_panes(player_win, prompt_win)
     vim.api.nvim_set_current_win(player_win)
+
+    new_snippet = u.join_strings(new_snippet_lines) -- HACK. TODO = ensure that when player_buf's lines are joined, they're the same as they were before splitting 
+
+
+    ----- EVENTS -----
+    lualine.setup({
+      sections = {
+        lualine_b = { edits_made },
+      },
+    })
 
     local start_time = vim.fn.localtime()
     print('Listening for changes at buffer:', player_buf)
